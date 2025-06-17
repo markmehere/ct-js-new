@@ -307,7 +307,7 @@ const uLib = {
         return (val - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     },
     hexToPixi(hex: string): number {
-        return Number('0x' + hex.slice(1));
+        return Number('0x' + hex.slice(1, 7));
     },
     pixiToHex(pixi: number): string {
         return '#' + (pixi).toString(16).padStart(6, '0');

@@ -251,8 +251,16 @@ export class Room extends PIXI.Container<pixiMod.DisplayObject> {
             }
             if (isRoot) {
                 roomsLib.current = this;
-                (pixiApp.renderer as pixiMod.Renderer).background.color =
-                    uLib.hexToPixi(this.template.backgroundColor);
+                if (
+                    this.template.backgroundColor.length === 7 &&
+                    this.template.backgroundColor[0] === '#'
+                ) {
+                    (pixiApp.renderer as pixiMod.Renderer).background.color =
+                        uLib.hexToPixi(this.template.backgroundColor);
+                } else {
+                    (pixiApp.renderer as pixiMod.Renderer).background.color =
+                        this.template.backgroundColor;
+                }
             }
             /*!%beforeroomoncreate%*/
             for (let i = 0, li = template.bgs.length; i < li; i++) {

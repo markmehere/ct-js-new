@@ -55,7 +55,7 @@ color-picker
                     .pipe(style="background: linear-gradient(to right, {color.setAlpha(1).devalueByRatio(1).toCSS()} 0%, {color.setAlpha(1).valueByAmount(1).toCSS()} 100%)")
                     input.transparent(type="range" value="{~~(color.getValue() * 100)}" min="0" max="100" onchange="{updateValue}" oninput="{updateValue}")
                 input.short(type="number" min="0" max="100" value="{~~(color.getValue() * 100)}" onchange="{updateValue}")
-            .flexrow(hide="{opts.hidealpha}")
+            .flexrow(hide="{opts.hidealpha && opts.hidealpha !== 'hexonly'}")
                 .aRangePipeStack
                     .pipe.alphabar
                     .pipe(style="background: linear-gradient(to right, transparent 0%, {color.setAlpha(1).toCSS()} 100%)")
@@ -78,9 +78,13 @@ color-picker
         const brehautColor = net.brehaut.Color;
         this.namespace = 'colorPicker';
         this.mixin(require('src/node_requires/riotMixins/voc').default);
-
         this.loadColor = color => {
-            this.color = brehautColor(color);
+            if (color[0] === '#' && color.length === 9) {
+                this.color = brehautColor(color.substring(0, 7));
+                this.color = this.color.setAlpha(parseInt(color.substring(7), 16) / 255);
+            } else {
+                this.color = brehautColor(color);
+            }
             this.color = this.color.setValue(this.color.getValue());
             this.oldColor = brehautColor(color);
         };
@@ -146,20 +150,43 @@ color-picker
             window.currentProject.palette.push(this.color.toString());
         };
 
+        const toHex = x => {
+            x = (Math.floor(x * 255)).toString(16)
+                .toUpperCase();
+            return x.length === 1 ? '0' + x : x;
+        };
         this.notifyUpdates = () => {
             this.dark = this.color.getLuminance() < 0.5;
             if (this.opts.onchanged) {
-                this.opts.onchanged(this.color.toString(), 'onchanged');
+                if (this.opts.hidealpha === 'hexonly') {
+                    this.opts.onchanged(this.color.toCSSHex() + toHex(this.color.alpha), 'onchanged');
+                } else if (this.opts.hidealpha) {
+                    this.opts.onchanged(this.color.toCSSHex(), 'onchanged');
+                } else {
+                    this.opts.onchanged(this.color.toString(), 'onchanged');
+                }
             }
         };
         this.applyColor = () => {
             this.dark = this.color.getLuminance() < 0.5;
             if (this.opts.onapply) {
-                this.opts.onapply(this.color.toString(), 'onapply');
+                if (this.opts.hidealpha === 'hexonly') {
+                    this.opts.onapply(this.color.toCSSHex() + toHex(this.color.alpha), 'onapply');
+                } else if (this.opts.hidealpha) {
+                    this.opts.onapply(this.color.toCSSHex(), 'onapply');
+                } else {
+                    this.opts.onapply(this.color.toString(), 'onapply');
+                }
             }
         };
         this.cancelColor = () => {
             if (this.opts.oncancel) {
-                this.opts.oncancel(this.color.toString(), 'oncancel');
+                if (this.opts.hidealpha === 'hexonly') {
+                    this.opts.oncancel(this.color.toCSSHex() + toHex(this.color.alpha), 'oncancel');
+                } else if (this.opts.hidealpha) {
+                    this.opts.oncancel(this.color.toCSSHex(), 'oncancel');
+                } else {
+                    this.opts.oncancel(this.color.toString(), 'oncancel');
+                }
             }
         };

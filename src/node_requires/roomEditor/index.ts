@@ -346,7 +346,7 @@ class RoomEditor extends PIXI.Application {
     deserialize(room: IRoom): void {
         this.simulate = room.simulate ?? true;
         (this.renderer as PIXI.Renderer).background.color =
-            PIXI.utils.string2hex(room.backgroundColor ?? '#000000');
+            PIXI.utils.string2hex((room.backgroundColor ?? '#000000').slice(0, 7));
         // Add primary viewport
         this.primaryViewport = new Viewport(room, true, this);
         this.restrictViewport = new ViewportRestriction(this);

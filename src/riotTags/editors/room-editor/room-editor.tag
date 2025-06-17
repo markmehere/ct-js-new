@@ -441,7 +441,7 @@ room-editor.aPanel.aView(data-hotkey-scope="{asset.uid}")
 
         this.changeBgColor = (e, color) => {
             this.room.backgroundColor = color;
-            this.pixiEditor.renderer.backgroundColor = PIXI.utils.string2hex(color);
+            this.pixiEditor.renderer.backgroundColor = PIXI.utils.string2hex(color.slice(0, 7));
         };
 
         this.changeSimulated = () => {
